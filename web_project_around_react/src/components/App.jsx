@@ -1,83 +1,23 @@
-// src/App.jsx
-import logoAround from "../images/aroundEEUU_logo.svg";
-import closeIcon from "../images/close_icon.png";
-import editIcon from "../images/edit-button_icon.png";
-import plusIcon from "../images/icon-plus_icon.png";
-import trashIcon from "../images/trash_icon.svg";
-import userImage from "../images/usuario.png";
 import "../index.css";
+
+/* Componentes */
+import Footer from "./Footer/Footer";
+import Header from "./Header/Header";
+import Main from "./Main/Main";
+
+import closeIcon from "../images/close_icon.png";
+import heartIcon from "../images/heart-outline_icon.svg";
+import trashIcon from "../images/trash_icon.svg";
 
 export default function App() {
   return (
     <>
       <div className="page">
         {/* -------------- Header -------------- */}
-        <header className="header">
-          <img
-            className="header__logo"
-            src={logoAround}
-            alt="Logotipo de Around The U.S."
-          />
-          <div className="header__divider"></div>
-        </header>
+        <Header />
 
         {/* -------------- Main Content -------------- */}
-        <main className="content">
-          {/* -------------- Profile Section -------------- */}
-          <section className="profile">
-            {/* Avatar Container */}
-            <div className="profile__avatar">
-              <img
-                className="profile__avatar-image"
-                src={userImage}
-                alt="Imagen de perfil"
-              />
-              <button
-                className="profile__avatar-edit"
-                aria-label="Cambiar avatar"
-                type="button"
-              >
-                <img
-                  src={editIcon}
-                  alt="icono de editar"
-                  className="profile__avatar-edit-icon"
-                />
-              </button>
-            </div>
-
-            {/* Profile Information */}
-            <div className="profile__info">
-              <h1 className="profile__info-name" hidden>
-                Ricardo Castro
-              </h1>
-              <button className="profile__edit-icon" type="button">
-                <img
-                  className="profile__edit-icon-image"
-                  src={editIcon}
-                  alt="Icono de editar"
-                />
-              </button>
-              <p className="profile__info-description" hidden>
-                Front-end Developer
-              </p>
-            </div>
-
-            <button className="profile__add-button-rectangle" type="button">
-              <img
-                className="profile__add-button-icon"
-                src={plusIcon}
-                alt="Icono de añadir"
-              />
-            </button>
-          </section>
-
-          {/* -------------- Photography Section -------------- */}
-          <section className="photography">
-            <h2 className="photography__heading" hidden>
-              Galería de fotos
-            </h2>
-          </section>
-        </main>
+        <Main />
 
         {/* -------------- Photography Card Template -------------- */}
         <template id="photography-card-template">
@@ -90,7 +30,7 @@ export default function App() {
               <h2 className="photography__info-title"></h2>
               <img
                 className="photography__info-icon"
-                src="./images/heart-outline_icon.svg"
+                src={heartIcon}
                 alt="Icono de me gusta"
               />
             </div>
@@ -98,11 +38,10 @@ export default function App() {
         </template>
 
         {/* -------------- Footer -------------- */}
-        <footer className="footer">
-          <p className="footer__copyright">© 2025 Around Minecraft</p>
-        </footer>
+        <Footer />
 
-        {/* -------------- Edit Profile Popup -------------- */}
+        {/* -------------- Popups (se quedan aquí por ahora) -------------- */}
+        {/* Edit Profile */}
         <div className="popup editPopup popup_hidden">
           <div className="popup__container">
             <div className="popup__content">
@@ -141,7 +80,7 @@ export default function App() {
             </div>
             <button className="editPopup__close-button" type="button">
               <img
-                src="./images/close_icon.png"
+                src="/close_icon.png" /* también puedes usar {closeIcon} */
                 alt="Cerrar"
                 className="editPopup__close-button-icon"
               />
@@ -149,7 +88,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* -------------- Add Place Popup -------------- */}
+        {/* Add Place */}
         <div className="popup addPopup popup_hidden">
           <div className="popup__container">
             <div className="popup__content">
@@ -194,7 +133,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* -------------- Image Popup -------------- */}
+        {/* Image Popup */}
         <div className="popup imagePopup popup_hidden">
           <div className="imagePopup__container">
             <img className="imagePopup__image" alt="Vista previa" />
@@ -208,7 +147,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* -------------- Confirmation delete Popup -------------- */}
+        {/* Confirmation delete Popup */}
         <div className="popup confirmationPopup popup_hidden">
           <div className="popup__container">
             <div className="popup__content">
@@ -230,7 +169,7 @@ export default function App() {
           </div>
         </div>
 
-        {/* -------------- Avatar Update Popup -------------- */}
+        {/* Avatar Update Popup */}
         <div className="popup avatarPopup popup_hidden">
           <div className="popup__container">
             <div className="popup__content">
@@ -263,7 +202,7 @@ export default function App() {
         </div>
       </div>
 
-      {/* -------------- Pantalla de carga-------------- */}
+      {/* -------------- Pantalla de carga -------------- */}
       <div
         id="pageLoader"
         className="pageLoader"
