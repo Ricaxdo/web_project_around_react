@@ -2,14 +2,11 @@
 import closeIcon from "../../../../images/close_icon.png";
 
 export default function Popup({
-  isOpen = true,
   onClose,
   title,
   children,
   variant, // "imagePopup" | "editPopup" | "addPopup" | "avatarPopup" | "confirmationPopup"
 }) {
-  if (!isOpen) return null;
-
   if (variant === "imagePopup") {
     return (
       <div
