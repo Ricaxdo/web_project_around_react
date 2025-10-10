@@ -48,6 +48,11 @@
   height: 40px;
 }
 
+.avatarPopup__close-button-icon:hover {
+  opacity: 0.6;
+  cursor: pointer;
+}
+
 .avatarPopup__input {
   max-width: 358px;
   width: 100%;
@@ -92,4 +97,9 @@
 }
 .avatarPopup__input-error_active {
   display: block;
+}
+
+.avatarPopup__submit-button:hover {
+  opacity: 0.8;
+  cursor: pointer;
 }
