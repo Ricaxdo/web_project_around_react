@@ -38,7 +38,6 @@ export default function Popup({
 
         {isImagePopup && children}
 
-        {/* Botón de cierre */}
         <button
           className={closeButtonClass}
           type="button"
