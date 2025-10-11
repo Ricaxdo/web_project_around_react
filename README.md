@@ -1,9 +1,6 @@
 # Tripleten web_project_around_react
 
-# Tripleten web_project_around
-
 Proyecto Sprint 14. Se desarrolla/migra proyecto a React + Vite
-
 
 # Tecnologias usadas
 
