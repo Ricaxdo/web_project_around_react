@@ -21,7 +21,6 @@ export default function Main() {
     avatarUrl: userImage,
   });
 
-  // --------- State helpers ---------
   const handleAddCard = ({ title, link }) => {
     const newCard = {
       _id: Date.now().toString(),
