@@ -1,25 +1,132 @@
-// src/components/Main/Main.jsx
+import { useState } from "react";
 import editIcon from "../../images/edit-button_icon.png";
 import plusIcon from "../../images/icon-plus_icon.png";
 import userImage from "../../images/usuario.png";
 
+import Card from "../Main/components/card/Card";
+import ConfirmDelete from "../Main/components/form/confirmdelete/ConfirmDelete";
+import EditProfile from "../Main/components/form/editprofile/EditProfile";
+import ImagePopup from "../Main/components/form/imagepopup/ImagePopup";
+import NewCard from "../Main/components/form/newcard/NewCard";
+import Popup from "../Main/components/popup/Popup";
+import { initialCards } from "../Main/constant/cards";
+import AvatarUpdate from "./components/form/editavatar/AvatarUpdate";
+
 export default function Main() {
+  const [cards, setCards] = useState(initialCards);
+  const [popup, setPopup] = useState(null);
+  const [profile, setProfile] = useState({
+    name: "Ricardo Castro",
+    about: "Front-end Developer",
+    avatarUrl: userImage,
+  });
+
+  // --------- State helpers ---------
+  const handleAddCard = ({ title, link }) => {
+    const newCard = {
+      _id: Date.now().toString(),
+      name: title,
+      link,
+      isLiked: false,
+      owner: "yo",
+      createdAt: new Date().toISOString(),
+    };
+    setCards((prev) => [newCard, ...prev]);
+  };
+
+  const handleDeleteCard = (id) => {
+    setCards((prev) => prev.filter((card) => card._id !== id));
+  };
+
+  const handleToggleLike = (id) => {
+    setCards((prev) =>
+      prev.map((card) =>
+        card._id === id ? { ...card, isLiked: !card.isLiked } : card
+      )
+    );
+  };
+
+  // --------- Popup open/close ---------
+  const handleClosePopup = () => setPopup(null);
+  function handleOpenPopup(nextPopup) {
+    setPopup(nextPopup);
+  }
+
+  // --------- Popup builders---------
+  const buildNewCardPopup = () => ({
+    title: "Nuevo lugar",
+    variant: "addPopup",
+    children: (
+      <NewCard
+        onAddNewCard={({ title, link }) => {
+          handleAddCard({ title, link });
+          setPopup(null);
+        }}
+      />
+    ),
+  });
+
+  const buildEditProfilePopup = () => ({
+    title: "Editar perfil",
+    variant: "editPopup",
+    children: (
+      <EditProfile
+        onSubmit={({ name, about }) => {
+          setProfile((prev) => ({ ...prev, name, about }));
+          setPopup(null);
+        }}
+      />
+    ),
+  });
+
+  const buildAvatarUpdatePopup = () => ({
+    title: "Actualizar foto de perfil",
+    variant: "avatarPopup",
+    children: (
+      <AvatarUpdate
+        onSaveAvatar={({ avatar }) => {
+          setProfile((prev) => ({ ...prev, avatarUrl: avatar }));
+          setPopup(null);
+        }}
+      />
+    ),
+  });
+
+  const buildConfirmDeletePopup = (cardId) => ({
+    title: "¿Eliminar card?",
+    variant: "confirmationPopup",
+    children: (
+      <ConfirmDelete
+        onConfirm={() => {
+          handleDeleteCard(cardId);
+          setPopup(null);
+        }}
+      />
+    ),
+  });
+
+  const buildImagePopup = (card) => ({
+    title: null,
+    variant: "imagePopup",
+    children: <ImagePopup card={card} />,
+  });
+
   return (
     <>
       <div className="content">
         {/* -------------- Profile Section -------------- */}
         <section className="profile">
-          {/* Avatar */}
           <div className="profile__avatar">
             <img
               className="profile__avatar-image"
-              src={userImage}
+              src={profile.avatarUrl ? profile.avatarUrl : userImage}
               alt="Imagen de perfil"
             />
             <button
               className="profile__avatar-edit"
               aria-label="Cambiar avatar"
               type="button"
+              onClick={() => handleOpenPopup(buildAvatarUpdatePopup())}
             >
               <img
                 src={editIcon}
@@ -29,24 +136,27 @@ export default function Main() {
             </button>
           </div>
 
-          {/* Info */}
           <div className="profile__info">
-            <h1 className="profile__info-name" hidden>
-              Ricardo Castro
-            </h1>
-            <button className="profile__edit-icon" type="button">
+            <h1 className="profile__info-name">{profile.name}</h1>
+            <button
+              className="profile__edit-icon"
+              type="button"
+              onClick={() => handleOpenPopup(buildEditProfilePopup())}
+            >
               <img
                 className="profile__edit-icon-image"
                 src={editIcon}
                 alt="Icono de editar"
               />
             </button>
-            <p className="profile__info-description" hidden>
-              Front-end Developer
-            </p>
+            <p className="profile__info-description">{profile.about}</p>
           </div>
 
-          <button className="profile__add-button-rectangle" type="button">
+          <button
+            className="profile__add-button-rectangle"
+            type="button"
+            onClick={() => handleOpenPopup(buildNewCardPopup())}
+          >
             <img
               className="profile__add-button-icon"
               src={plusIcon}
@@ -60,8 +170,30 @@ export default function Main() {
           <h2 className="photography__heading" hidden>
             Galería de fotos
           </h2>
-          {/* Aquí luego renderizaremos la lista de cards con estado */}
+
+          {cards.map((card) => (
+            <Card
+              key={card._id}
+              card={card}
+              onLike={handleToggleLike}
+              onPreview={(card) => handleOpenPopup(buildImagePopup(card))}
+              onDelete={() =>
+                handleOpenPopup(buildConfirmDeletePopup(card._id))
+              }
+            />
+          ))}
         </section>
+
+        {/* -------------- Popup condicional -------------- */}
+        {popup && (
+          <Popup
+            onClose={handleClosePopup}
+            title={popup.title}
+            variant={popup.variant}
+          >
+            {popup.children}
+          </Popup>
+        )}
       </div>
     </>
   );

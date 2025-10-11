@@ -1,4 +1,3 @@
-// src/components/.../popup/Popup.jsx
 import closeIcon from "../../../../images/close_icon.png";
 
 export default function Popup({
@@ -7,31 +6,17 @@ export default function Popup({
   children,
   variant, // "imagePopup" | "editPopup" | "addPopup" | "avatarPopup" | "confirmationPopup"
 }) {
-  if (variant === "imagePopup") {
-    return (
-      <div
-        className={`popup ${variant} popup_opened`}
-        role="dialog"
-        aria-modal="true"
-      >
-        <div className="imagePopup__container">
-          {children}
-          <button
-            className="imagePopup__close-button"
-            type="button"
-            aria-label="Close modal"
-            onClick={onClose}
-          >
-            <img
-              src={closeIcon}
-              alt="Cerrar"
-              className="imagePopup__close-button-icon"
-            />
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const isImagePopup = variant === "imagePopup";
+
+  const containerClass = isImagePopup
+    ? "imagePopup__container"
+    : "popup__container";
+  const closeButtonClass = isImagePopup
+    ? "imagePopup__close-button"
+    : `${variant}__close-button`;
+  const closeIconClass = isImagePopup
+    ? "imagePopup__close-button-icon"
+    : `${variant}__close-button-icon`;
 
   return (
     <div
@@ -39,25 +24,28 @@ export default function Popup({
       role="dialog"
       aria-modal="true"
     >
-      <div className="popup__container">
-        <div className="popup__content">
-          <h2 className={variant ? `${variant}__title` : "popup__title"}>
-            {title}
-          </h2>
-          {children}
-        </div>
+      <div className={containerClass}>
+        {!isImagePopup && (
+          <div className="popup__content">
+            {title && (
+              <h2 className={variant ? `${variant}__title` : "popup__title"}>
+                {title}
+              </h2>
+            )}
+            {children}
+          </div>
+        )}
 
+        {isImagePopup && children}
+
+        {/* Botón de cierre */}
         <button
-          className={`${variant}__close-button`}
+          className={closeButtonClass}
           type="button"
-          aria-label="Close modal"
+          aria-label="Cerrar modal"
           onClick={onClose}
         >
-          <img
-            src={closeIcon}
-            alt="Cerrar"
-            className={`${variant}__close-button-icon`}
-          />
+          <img src={closeIcon} alt="Cerrar" className={closeIconClass} />
         </button>
       </div>
     </div>

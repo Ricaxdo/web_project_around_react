@@ -1,4 +1,3 @@
-// src/components/Main/components/popup/ImagePopup.jsx
 export default function ImagePopup({ card }) {
   if (!card) return null;
   return (

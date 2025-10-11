@@ -1,4 +1,3 @@
-// src/components/Main/components/form/confirm/ConfirmDelete.jsx
 export default function ConfirmDelete({ onConfirm }) {
   const handleSubmit = (e) => {
     e.preventDefault();
