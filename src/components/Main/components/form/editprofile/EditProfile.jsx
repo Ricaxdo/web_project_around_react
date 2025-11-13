@@ -1,10 +1,30 @@
-export default function EditProfile({ onSubmit }) {
+// src/components/Main/components/form/editprofile/EditProfile.jsx
+import { useContext, useEffect, useState } from "react";
+import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+
+export default function EditProfile({ onClose }) {
+  const { currentUser, handleUpdateUser } =
+    useContext(CurrentUserContext) ?? {};
+
+  const [name, setName] = useState("");
+  const [about, setAbout] = useState("");
+
+  // Cuando currentUser cambie (o se cargue de la API), rellenar el formulario
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.name || "");
+      setAbout(currentUser.about || "");
+    }
+  }, [currentUser]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const form = e.currentTarget;
-    const name = form.name.value.trim();
-    const about = form.about.value.trim();
-    onSubmit?.({ name, about });
+
+    // Enviar a la API
+    handleUpdateUser?.({ name, about });
+
+    // Cerrar popup
+    onClose?.();
   };
 
   return (
@@ -18,6 +38,8 @@ export default function EditProfile({ onSubmit }) {
         required
         minLength={2}
         maxLength={40}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
       <span className="editPopup__input-error input-name-error">
         Por favor, rellena este campo
@@ -32,6 +54,8 @@ export default function EditProfile({ onSubmit }) {
         required
         minLength={2}
         maxLength={300}
+        value={about}
+        onChange={(e) => setAbout(e.target.value)}
       />
       <span className="editPopup__input-error input-about-error">
         Por favor, rellena este campo

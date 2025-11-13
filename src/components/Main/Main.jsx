@@ -19,7 +19,7 @@ export default function Main() {
   const [popup, setPopup] = useState(null);
 
   const userContext = useContext(CurrentUserContext);
-  const { currentUser, setCurrentUser } = userContext || {};
+  const { currentUser } = userContext || {};
 
   // Fallback mientras no llega el usuario de la API
   const profile = currentUser || {
@@ -88,10 +88,7 @@ export default function Main() {
     variant: "editPopup",
     children: (
       <EditProfile
-        onSubmit={({ name, about }) => {
-          setCurrentUser?.((prev) =>
-            prev ? { ...prev, name, about } : { name, about, avatar: userImage }
-          );
+        onClose={() => {
           setPopup(null);
         }}
       />
@@ -103,16 +100,7 @@ export default function Main() {
     variant: "avatarPopup",
     children: (
       <AvatarUpdate
-        onSaveAvatar={({ avatar }) => {
-          setCurrentUser?.((prev) =>
-            prev
-              ? { ...prev, avatar }
-              : {
-                  name: "Ricardo Castro",
-                  about: "Front-end Developer",
-                  avatar,
-                }
-          );
+        onClose={() => {
           setPopup(null);
         }}
       />
