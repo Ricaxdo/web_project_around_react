@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import editIcon from "../../images/edit-button_icon.png";
 import plusIcon from "../../images/icon-plus_icon.png";
 import userImage from "../../images/usuario.png";
@@ -9,17 +9,35 @@ import EditProfile from "../Main/components/form/editprofile/EditProfile";
 import ImagePopup from "../Main/components/form/imagepopup/ImagePopup";
 import NewCard from "../Main/components/form/newcard/NewCard";
 import Popup from "../Main/components/popup/Popup";
-import { initialCards } from "../Main/constant/cards";
 import AvatarUpdate from "./components/form/editavatar/AvatarUpdate";
 
+import { CurrentUserContext } from "../../contexts/CurrentUserContext";
+import { api } from "../../utils/api";
+
 export default function Main() {
-  const [cards, setCards] = useState(initialCards);
+  const [cards, setCards] = useState([]);
   const [popup, setPopup] = useState(null);
-  const [profile, setProfile] = useState({
+
+  const userContext = useContext(CurrentUserContext);
+  const { currentUser, setCurrentUser } = userContext || {};
+
+  // Fallback mientras no llega el usuario de la API
+  const profile = currentUser || {
     name: "Ricardo Castro",
     about: "Front-end Developer",
-    avatarUrl: userImage,
-  });
+    avatar: userImage,
+  };
+
+  useEffect(() => {
+    api
+      .getInitialCards()
+      .then((cardsFromApi) => {
+        setCards(cardsFromApi);
+      })
+      .catch((err) => {
+        console.error("Error al cargar tarjetas:", err);
+      });
+  }, []);
 
   const handleAddCard = ({ title, link }) => {
     const newCard = {
@@ -71,7 +89,9 @@ export default function Main() {
     children: (
       <EditProfile
         onSubmit={({ name, about }) => {
-          setProfile((prev) => ({ ...prev, name, about }));
+          setCurrentUser?.((prev) =>
+            prev ? { ...prev, name, about } : { name, about, avatar: userImage }
+          );
           setPopup(null);
         }}
       />
@@ -84,7 +104,15 @@ export default function Main() {
     children: (
       <AvatarUpdate
         onSaveAvatar={({ avatar }) => {
-          setProfile((prev) => ({ ...prev, avatarUrl: avatar }));
+          setCurrentUser?.((prev) =>
+            prev
+              ? { ...prev, avatar }
+              : {
+                  name: "Ricardo Castro",
+                  about: "Front-end Developer",
+                  avatar,
+                }
+          );
           setPopup(null);
         }}
       />
@@ -118,7 +146,7 @@ export default function Main() {
           <div className="profile__avatar">
             <img
               className="profile__avatar-image"
-              src={profile.avatarUrl ? profile.avatarUrl : userImage}
+              src={profile.avatar || userImage}
               alt="Imagen de perfil"
             />
             <button
