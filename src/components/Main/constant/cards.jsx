@@ -1,4 +1,4 @@
-export const initialCards = [
+export const InitialCards = [
   {
     isLiked: false,
     _id: "5d1f0611d321eb4bdcd707dd",
