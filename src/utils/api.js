@@ -11,7 +11,9 @@ class Api {
   _checkResponse(res) {
     if (res.ok) return res.json();
     return res.text().then((text) => {
-      const err = new Error(text || "Error en la respuesta de la API");
+      const err = new Error(
+        `Error ${res.status}: ${text || "Error en la respuesta de la API"}`
+      );
       err.status = res.status;
       err.statusText = res.statusText;
       err.url = res.url;

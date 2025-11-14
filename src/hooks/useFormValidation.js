@@ -14,7 +14,7 @@ export function useFormValidation(initialValues = {}) {
         error = target.validationMessage;
       }
 
-      // ✅ Regla personalizada tipo FormValidator: URL debe empezar con https://
+      // Regla personalizada tipo FormValidator: URL debe empezar con https://
       if ((name === "link" || name === "avatar") && value) {
         if (!value.startsWith("https://")) {
           error = "La URL debe comenzar con https://";
