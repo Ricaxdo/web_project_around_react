@@ -10,7 +10,7 @@ import EditProfile from "../Main/components/form/editprofile/EditProfile";
 import ImagePopup from "../Main/components/form/imagepopup/ImagePopup";
 import NewCard from "../Main/components/form/newcard/NewCard";
 import Popup from "../Main/components/popup/Popup";
-import AvatarUpdate from "./components/form/editavatar/AvatarUpdate";
+import EditAvatar from "./components/form/editavatar/EditAvatar";
 
 // Contexto de usuario
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
@@ -197,10 +197,7 @@ export default function Main({
 
           {/** Popup actualizar avatar */}
           {popup.type === "avatar" && (
-            <AvatarUpdate
-              isSaving={isSavingAvatar}
-              onClose={handleClosePopup}
-            />
+            <EditAvatar isSaving={isSavingAvatar} onClose={handleClosePopup} />
           )}
 
           {/** Popup confirmar eliminación */}

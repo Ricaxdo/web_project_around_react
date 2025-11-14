@@ -2,7 +2,7 @@ import { useContext, useEffect } from "react";
 import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { useFormValidation } from "../../../../../hooks/useFormValidation";
 
-export default function AvatarUpdate({ onClose, isSaving }) {
+export default function EditAvatar({ onClose, isSaving }) {
   const { handleUpdateAvatar } = useContext(CurrentUserContext) ?? {};
 
   const { values, errors, isValid, handleChange, resetForm } =
