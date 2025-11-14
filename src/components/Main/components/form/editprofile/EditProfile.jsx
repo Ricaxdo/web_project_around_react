@@ -1,68 +1,121 @@
 // src/components/Main/components/form/editprofile/EditProfile.jsx
-import { useContext, useEffect, useState } from "react";
-import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 
-export default function EditProfile({ onClose }) {
+import { useContext, useEffect } from "react";
+import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { useFormValidation } from "../../../../../hooks/useFormValidation";
+
+export default function EditProfile({ onClose, isSaving }) {
   const { currentUser, handleUpdateUser } =
     useContext(CurrentUserContext) ?? {};
 
-  const [name, setName] = useState("");
-  const [about, setAbout] = useState("");
+  const { values, errors, isValid, handleChange, resetForm } =
+    useFormValidation({
+      name: currentUser?.name || "",
+      about: currentUser?.about || "",
+    });
 
-  // Cuando currentUser cambie (o se cargue de la API), rellenar el formulario
   useEffect(() => {
     if (currentUser) {
-      setName(currentUser.name || "");
-      setAbout(currentUser.about || "");
+      resetForm(
+        { name: currentUser.name || "", about: currentUser.about || "" },
+        {},
+        true
+      );
     }
-  }, [currentUser]);
+  }, [currentUser, resetForm]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isValid || !handleUpdateUser) return;
 
-    // Enviar a la API
-    handleUpdateUser?.({ name, about });
+    const payload = {
+      name: values.name.trim(),
+      about: values.about.trim(),
+    };
 
-    // Cerrar popup
-    onClose?.();
+    handleUpdateUser(payload)
+      .then(() => {
+        onClose?.();
+      })
+      .catch((err) => {
+        console.error("Error al actualizar perfil:", err);
+      });
   };
+
+  const nameError = errors.name;
+  const aboutError = errors.about;
+
+  const nameInputClass = `editPopup__input editPopup__input-name ${
+    nameError
+      ? "editPopup__input-type-error"
+      : values.name
+      ? "editPopup__input-type-valid"
+      : ""
+  }`;
+
+  const aboutInputClass = `editPopup__input editPopup__input-about ${
+    aboutError
+      ? "editPopup__input-type-error"
+      : values.about
+      ? "editPopup__input-type-valid"
+      : ""
+  }`;
+
+  const submitButtonClass = `editPopup__submit-button ${
+    !isValid || isSaving ? "editPopup__submit-button_disabled" : ""
+  }`;
 
   return (
     <form className="editPopup__form" noValidate onSubmit={handleSubmit}>
+      {/* ---------------- NAME ---------------- */}
       <input
         id="input-name"
         type="text"
         name="name"
-        className="editPopup__input editPopup__input-name"
+        className={nameInputClass}
         placeholder="Nombre"
         required
         minLength={2}
         maxLength={40}
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={values.name}
+        onChange={handleChange}
       />
-      <span className="editPopup__input-error input-name-error">
-        Por favor, rellena este campo
+      <span
+        className={`editPopup__input-error input-name-error ${
+          nameError ? "editPopup__input-error_active" : ""
+        }`}
+      >
+        {nameError || "Por favor, rellena este campo"}
       </span>
 
+      {/* ---------------- ABOUT ---------------- */}
       <input
         id="input-about"
         type="text"
         name="about"
-        className="editPopup__input editPopup__input-about"
+        className={aboutInputClass}
         placeholder="Acerca de mí"
         required
         minLength={2}
         maxLength={300}
-        value={about}
-        onChange={(e) => setAbout(e.target.value)}
+        value={values.about}
+        onChange={handleChange}
       />
-      <span className="editPopup__input-error input-about-error">
-        Por favor, rellena este campo
+      <span
+        className={`editPopup__input-error input-about-error ${
+          aboutError ? "editPopup__input-error_active" : ""
+        }`}
+      >
+        {aboutError || "Por favor, rellena este campo"}
       </span>
 
-      <button type="submit" className="editPopup__submit-button">
-        Guardar
+      {/* ------------ SUBMIT BUTTON ------------ */}
+      <button
+        type="submit"
+        className={submitButtonClass}
+        disabled={!isValid || isSaving}
+      >
+        {isSaving ? "Guardando..." : "Guardar"}
       </button>
     </form>
   );

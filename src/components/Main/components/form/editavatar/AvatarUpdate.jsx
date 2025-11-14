@@ -1,22 +1,46 @@
-import { useContext, useRef } from "react";
+// src/components/Main/components/form/editavatar/AvatarUpdate.jsx
+import { useContext, useEffect } from "react";
 import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
+import { useFormValidation } from "../../../../../hooks/useFormValidation";
 
-export default function AvatarUpdate({ onClose }) {
+export default function AvatarUpdate({ onClose, isSaving }) {
   const { handleUpdateAvatar } = useContext(CurrentUserContext) ?? {};
-  const avatarRef = useRef(null);
+
+  const { values, errors, isValid, handleChange, resetForm } =
+    useFormValidation({ avatar: "" });
+
+  useEffect(() => {
+    resetForm({ avatar: "" }, {}, false);
+  }, [resetForm]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isValid || !handleUpdateAvatar) return;
 
-    const url = avatarRef.current?.value.trim();
-    if (!url) return;
+    const payload = { avatar: values.avatar.trim() };
 
-    // Llamamos a la API a través del contexto
-    handleUpdateAvatar?.({ avatar: url });
-
-    // Cerramos el popup
-    onClose?.();
+    handleUpdateAvatar(payload)
+      .then(() => {
+        onClose?.(); // 👈 cerrar después de la promesa
+      })
+      .catch((err) => {
+        console.error("Error al actualizar avatar:", err);
+      });
   };
+
+  const avatarError = errors.avatar;
+
+  const avatarInputClass = `avatarPopup__input ${
+    avatarError
+      ? "avatarPopup__input-type-error"
+      : values.avatar
+      ? "avatarPopup__input-type-valid"
+      : ""
+  }`;
+
+  const submitButtonClass = `avatarPopup__submit-button ${
+    !isValid || isSaving ? "avatarPopup__submit-button_disabled" : ""
+  }`;
 
   return (
     <form className="avatarPopup__form" noValidate onSubmit={handleSubmit}>
@@ -24,17 +48,26 @@ export default function AvatarUpdate({ onClose }) {
         id="input-avatar"
         type="url"
         name="avatar"
-        className="avatarPopup__input"
+        className={avatarInputClass}
         placeholder="Enlace de tu imagen de perfil"
         required
-        ref={avatarRef} // 👈 usamos ref
+        value={values.avatar}
+        onChange={handleChange}
       />
-      <span className="avatarPopup__input-error input-avatar-error">
-        Por favor, rellena este campo
+      <span
+        className={`avatarPopup__input-error input-avatar-error ${
+          avatarError ? "avatarPopup__input-error_active" : ""
+        }`}
+      >
+        {avatarError || "Por favor, rellena este campo"}
       </span>
 
-      <button className="avatarPopup__submit-button" type="submit">
-        Guardar
+      <button
+        className={submitButtonClass}
+        type="submit"
+        disabled={!isValid || isSaving}
+      >
+        {isSaving ? "Guardando..." : "Guardar"}
       </button>
     </form>
   );
