@@ -1,5 +1,3 @@
-// src/components/Main/components/card/Card.jsx
-
 import heartOutlineIcon from "../../../../images/heart-outline_icon.svg";
 import heartIcon from "../../../../images/heart_icon.svg";
 import trashIcon from "../../../../images/trash_icon.svg";

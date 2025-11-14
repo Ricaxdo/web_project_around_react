@@ -1,12 +1,9 @@
-// src/components/Main/components/form/newcard/NewCard.jsx
 import { useEffect } from "react";
 import { useFormValidation } from "../../../../../hooks/useFormValidation";
 
 export default function NewCard({ onAddNewCard, isSaving, onClose }) {
   const { values, errors, isValid, handleChange, resetForm } =
     useFormValidation({ title: "", link: "" });
-
-  console.log("NewCard → isSaving:", isSaving);
 
   useEffect(() => {
     resetForm({ title: "", link: "" }, {}, false);

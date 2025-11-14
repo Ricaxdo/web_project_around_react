@@ -1,4 +1,3 @@
-// src/components/Main/components/form/editavatar/AvatarUpdate.jsx
 import { useContext, useEffect } from "react";
 import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { useFormValidation } from "../../../../../hooks/useFormValidation";
@@ -21,7 +20,7 @@ export default function AvatarUpdate({ onClose, isSaving }) {
 
     handleUpdateAvatar(payload)
       .then(() => {
-        onClose?.(); // 👈 cerrar después de la promesa
+        onClose?.();
       })
       .catch((err) => {
         console.error("Error al actualizar avatar:", err);

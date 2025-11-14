@@ -1,5 +1,3 @@
-// src/components/Main/components/form/editprofile/EditProfile.jsx
-
 import { useContext, useEffect } from "react";
 import { CurrentUserContext } from "../../../../../contexts/CurrentUserContext";
 import { useFormValidation } from "../../../../../hooks/useFormValidation";
