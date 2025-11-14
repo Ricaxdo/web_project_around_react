@@ -1,8 +1,9 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import editIcon from "../../images/edit-button_icon.png";
 import plusIcon from "../../images/icon-plus_icon.png";
 import userImage from "../../images/usuario.png";
 
+// Componentes del sistema
 import Card from "../Main/components/card/Card";
 import ConfirmDelete from "../Main/components/form/confirmdelete/ConfirmDelete";
 import EditProfile from "../Main/components/form/editprofile/EditProfile";
@@ -11,205 +12,210 @@ import NewCard from "../Main/components/form/newcard/NewCard";
 import Popup from "../Main/components/popup/Popup";
 import AvatarUpdate from "./components/form/editavatar/AvatarUpdate";
 
+// Contexto de usuario
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
-import { api } from "../../utils/api";
 
-export default function Main() {
-  const [cards, setCards] = useState([]);
-  const [popup, setPopup] = useState(null);
+export default function Main({
+  cards,
+  onCardLike,
+  onCardDelete,
+  onAddPlaceSubmit,
+  isSavingProfile,
+  isSavingAvatar,
+  isAddingCard,
+  isDeletingCard,
+}) {
+  const [popup, setPopup] = useState({ type: null, card: null });
 
-  const userContext = useContext(CurrentUserContext);
-  const { currentUser } = userContext || {};
+  const { currentUser } = useContext(CurrentUserContext) ?? {};
 
-  // Fallback mientras no llega el usuario de la API
   const profile = currentUser || {
     name: "Ricardo Castro",
     about: "Front-end Developer",
     avatar: userImage,
   };
 
-  useEffect(() => {
-    api
-      .getInitialCards()
-      .then((cardsFromApi) => {
-        setCards(cardsFromApi);
-      })
-      .catch((err) => {
-        console.error("Error al cargar tarjetas:", err);
-      });
-  }, []);
+  const handleClosePopup = () => setPopup({ type: null, card: null });
 
-  const handleAddCard = ({ title, link }) => {
-    const newCard = {
-      _id: Date.now().toString(),
-      name: title,
-      link,
-      isLiked: false,
-      owner: "yo",
-      createdAt: new Date().toISOString(),
-    };
-    setCards((prev) => [newCard, ...prev]);
+  //----------------------------
+  // Helpers para abrir cada popup
+  //----------------------------
+
+  const openNewCardPopup = () => setPopup({ type: "newCard", card: null });
+
+  const openEditProfilePopup = () =>
+    setPopup({ type: "editProfile", card: null });
+
+  const openAvatarPopup = () => setPopup({ type: "avatar", card: null });
+
+  const openConfirmDeletePopup = (card) =>
+    setPopup({ type: "confirmDelete", card });
+
+  const openImagePopup = (card) => setPopup({ type: "image", card });
+
+  //-------------------------------------------
+  // Configuración de títulos y variantes CSS
+  //-------------------------------------------
+  const getPopupConfig = () => {
+    switch (popup.type) {
+      case "newCard":
+        return { title: "Nuevo lugar", variant: "addPopup" };
+
+      case "editProfile":
+        return { title: "Editar perfil", variant: "editPopup" };
+
+      case "avatar":
+        return {
+          title: "Actualizar foto de perfil",
+          variant: "avatarPopup",
+        };
+
+      case "confirmDelete":
+        return {
+          title: "¿Eliminar card?",
+          variant: "confirmationPopup",
+        };
+
+      case "image":
+        return { title: null, variant: "imagePopup" };
+
+      default:
+        return { title: null, variant: "" };
+    }
   };
 
-  const handleDeleteCard = (id) => {
-    setCards((prev) => prev.filter((card) => card._id !== id));
-  };
-
-  const handleToggleLike = (id) => {
-    setCards((prev) =>
-      prev.map((card) =>
-        card._id === id ? { ...card, isLiked: !card.isLiked } : card
-      )
-    );
-  };
-
-  // --------- Popup open/close ---------
-  const handleClosePopup = () => setPopup(null);
-  function handleOpenPopup(nextPopup) {
-    setPopup(nextPopup);
-  }
-
-  // --------- Popup builders---------
-  const buildNewCardPopup = () => ({
-    title: "Nuevo lugar",
-    variant: "addPopup",
-    children: (
-      <NewCard
-        onAddNewCard={({ title, link }) => {
-          handleAddCard({ title, link });
-          setPopup(null);
-        }}
-      />
-    ),
-  });
-
-  const buildEditProfilePopup = () => ({
-    title: "Editar perfil",
-    variant: "editPopup",
-    children: (
-      <EditProfile
-        onClose={() => {
-          setPopup(null);
-        }}
-      />
-    ),
-  });
-
-  const buildAvatarUpdatePopup = () => ({
-    title: "Actualizar foto de perfil",
-    variant: "avatarPopup",
-    children: (
-      <AvatarUpdate
-        onClose={() => {
-          setPopup(null);
-        }}
-      />
-    ),
-  });
-
-  const buildConfirmDeletePopup = (cardId) => ({
-    title: "¿Eliminar card?",
-    variant: "confirmationPopup",
-    children: (
-      <ConfirmDelete
-        onConfirm={() => {
-          handleDeleteCard(cardId);
-          setPopup(null);
-        }}
-      />
-    ),
-  });
-
-  const buildImagePopup = (card) => ({
-    title: null,
-    variant: "imagePopup",
-    children: <ImagePopup card={card} />,
-  });
+  const popupConfig = getPopupConfig();
 
   return (
-    <>
-      <div className="content">
-        {/* -------------- Profile Section -------------- */}
-        <section className="profile">
-          <div className="profile__avatar">
-            <img
-              className="profile__avatar-image"
-              src={profile.avatar || userImage}
-              alt="Imagen de perfil"
-            />
-            <button
-              className="profile__avatar-edit"
-              aria-label="Cambiar avatar"
-              type="button"
-              onClick={() => handleOpenPopup(buildAvatarUpdatePopup())}
-            >
-              <img
-                src={editIcon}
-                alt="icono de editar"
-                className="profile__avatar-edit-icon"
-              />
-            </button>
-          </div>
+    <div className="content">
+      {/* ------------------------------------------------ */}
+      {/* -------------- Profile Section ----------------- */}
+      {/* ------------------------------------------------ */}
+      <section className="profile">
+        <div className="profile__avatar">
+          <img
+            className="profile__avatar-image"
+            src={profile.avatar || userImage}
+            alt="Imagen de perfil"
+          />
 
-          <div className="profile__info">
-            <h1 className="profile__info-name">{profile.name}</h1>
-            <button
-              className="profile__edit-icon"
-              type="button"
-              onClick={() => handleOpenPopup(buildEditProfilePopup())}
-            >
-              <img
-                className="profile__edit-icon-image"
-                src={editIcon}
-                alt="Icono de editar"
-              />
-            </button>
-            <p className="profile__info-description">{profile.about}</p>
-          </div>
-
+          {/** Botón para abrir popup de cambiar avatar */}
           <button
-            className="profile__add-button-rectangle"
+            className="profile__avatar-edit"
+            aria-label="Cambiar avatar"
             type="button"
-            onClick={() => handleOpenPopup(buildNewCardPopup())}
+            onClick={openAvatarPopup}
           >
             <img
-              className="profile__add-button-icon"
-              src={plusIcon}
-              alt="Icono de añadir"
+              src={editIcon}
+              alt="icono de editar"
+              className="profile__avatar-edit-icon"
             />
           </button>
-        </section>
+        </div>
 
-        {/* -------------- Photography Section -------------- */}
-        <section className="photography">
-          <h2 className="photography__heading" hidden>
-            Galería de fotos
-          </h2>
+        <div className="profile__info">
+          <h1 className="profile__info-name">{profile.name}</h1>
 
-          {cards.map((card) => (
-            <Card
-              key={card._id}
-              card={card}
-              onLike={handleToggleLike}
-              onPreview={(card) => handleOpenPopup(buildImagePopup(card))}
-              onDelete={() =>
-                handleOpenPopup(buildConfirmDeletePopup(card._id))
-              }
-            />
-          ))}
-        </section>
-
-        {/* -------------- Popup condicional -------------- */}
-        {popup && (
-          <Popup
-            onClose={handleClosePopup}
-            title={popup.title}
-            variant={popup.variant}
+          {/** Botón para abrir popup de editar perfil */}
+          <button
+            className="profile__edit-icon"
+            type="button"
+            onClick={openEditProfilePopup}
           >
-            {popup.children}
-          </Popup>
-        )}
-      </div>
-    </>
+            <img
+              className="profile__edit-icon-image"
+              src={editIcon}
+              alt="Icono de editar"
+            />
+          </button>
+
+          <p className="profile__info-description">{profile.about}</p>
+        </div>
+
+        {/** Botón para abrir popup de añadir nueva tarjeta */}
+        <button
+          className="profile__add-button-rectangle"
+          type="button"
+          onClick={openNewCardPopup}
+        >
+          <img
+            className="profile__add-button-icon"
+            src={plusIcon}
+            alt="Icono de añadir"
+          />
+        </button>
+      </section>
+
+      {/* ------------------------------------------------ */}
+      {/* -------------- Photography Section ------------- */}
+      {/* ------------------------------------------------ */}
+      <section className="photography">
+        <h2 className="photography__heading" hidden>
+          Galería de fotos
+        </h2>
+
+        {/** Render de todas las cards mostrando like, delete, preview */}
+        {cards.map((card) => (
+          <Card
+            key={card._id}
+            card={card}
+            onCardLike={onCardLike}
+            onCardDelete={(cardToDelete) =>
+              openConfirmDeletePopup(cardToDelete)
+            }
+            onPreview={(cardToPreview) => openImagePopup(cardToPreview)}
+          />
+        ))}
+      </section>
+
+      {/* ------------------------------------------------ */}
+      {/* -------------- Popup condicional ---------------- */}
+      {/* ------------------------------------------------ */}
+      {popup.type && (
+        <Popup
+          onClose={handleClosePopup}
+          title={popupConfig.title}
+          variant={popupConfig.variant}
+        >
+          {/** Popup para crear nueva tarjeta */}
+          {popup.type === "newCard" && (
+            <NewCard
+              isSaving={isAddingCard} // muestra "Creando…"
+              onAddNewCard={onAddPlaceSubmit}
+              onClose={handleClosePopup}
+            />
+          )}
+
+          {/** Popup editar perfil */}
+          {popup.type === "editProfile" && (
+            <EditProfile
+              isSaving={isSavingProfile}
+              onClose={handleClosePopup}
+            />
+          )}
+
+          {/** Popup actualizar avatar */}
+          {popup.type === "avatar" && (
+            <AvatarUpdate
+              isSaving={isSavingAvatar}
+              onClose={handleClosePopup}
+            />
+          )}
+
+          {/** Popup confirmar eliminación */}
+          {popup.type === "confirmDelete" && (
+            <ConfirmDelete
+              isDeleting={isDeletingCard} // muestra "Eliminando…"
+              onConfirm={() => onCardDelete?.(popup.card)} // eliminación real
+              onClose={handleClosePopup} // cerrar después
+            />
+          )}
+
+          {/** Popup para mostrar imagen grande */}
+          {popup.type === "image" && <ImagePopup card={popup.card} />}
+        </Popup>
+      )}
+    </div>
   );
 }
