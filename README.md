@@ -1,19 +1,20 @@
-# Tripleten web_project_around_react
+# web_project_around_react
 
-Proyecto Sprint 14. Se desarrolla/migra proyecto a React + Vite
+Proyecto de los Sprints 14–15 de TripleTen.  
+Migración y desarrollo del proyecto “Alrededor de los EE. UU.” utilizando **React + Vite**.
 
-# Tecnologias usadas
+## 🚀 Tecnologías
+React · Vite · HTML · CSS · JavaScript  
+Metodología BEM · Git · GitHub · Figma · Módulos ES
 
-REACT, VITE, HTML, CSS, Metodología BEM, Git, GitHub, Figma, JavaScript, Modulos
+## 🧩 Técnicas aplicadas
+- Diseño responsivo  
+- Media Queries  
+- Uso de componentes  
+- Manejo de estado básico  
+- DevTools para depuración
 
-# Tecnicas aplicadas
-
-Diseño Responsivo
-
-Medias Queries
-
-DevTools
-
-JavaScript
-
-Uso de componentes
+## ▶️ Instalación
+```bash
+npm install
+npm run dev
